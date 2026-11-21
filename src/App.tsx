@@ -155,6 +155,8 @@ function createInitialVehicles(edges: RoadEdge[], weather: WeatherCondition): Ve
 }
 
 export default function App() {
+  const [lang, setLang] = useState<'kk' | 'en'>('kk');
+  const t = translations[lang];
   const [activeTab, setActiveTab] = useState<TabId>('live-map');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [simSpeed, setSimSpeed] = useState<1 | 2 | 4 | 8>(1);
@@ -1026,6 +1028,13 @@ export default function App() {
 
         {/* Simulation Clock & Controls */}
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setLang((prev) => (prev === 'kk' ? 'en' : 'kk'))}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 flex items-center gap-1.5 transition shadow"
+            title="Тілді ауыстыру / Switch Language">
+            <span>🌐</span>
+            <span>{lang === 'kk' ? '🇰🇿 ҚАЗ' : '🇬🇧 ENG'}</span>
+          </button>
           <div className="bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-1.5 flex items-center gap-2 text-xs">
             <Radio className={`w-3.5 h-3.5 ${isRunning ? 'text-emerald-400 animate-pulse' : 'text-amber-400'}`} />
             <span className="font-mono font-bold text-cyan-300">{formatSimTime(simSeconds)}</span>
