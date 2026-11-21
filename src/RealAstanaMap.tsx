@@ -319,35 +319,62 @@ export const RealAstanaMap: React.FC<RealAstanaMapProps> = ({
     });
   }, [vehicles, overlays.vehicles, t]);
 
-  // Render Incidents
-  useEffect(() => {
-    const layers = layersRef.current;
-    if (!layers) return;
-    layers.incidents.clearLayers();
-    if (!overlays.incidents) return;
+// Render Incidents
+useEffect(() => {
+  const layers = layersRef.current;
+  if (!layers) return;
+  layers.incidents.clearLayers();
+  if (!overlays.incidents) return;
 
-    incidents
-      .filter((i) => i.status !== 'Resolved' && i.status !== 'Cancelled')
-      .forEach((inc) => {
-        const icon = L.divIcon({
-          className: 'custom-incident-icon',
-          html: `<div style="background:#ef4444;border:2px solid #fff;color:#fff;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:9999px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px #ef4444;">!</div>`,
-          iconSize: [22, 22],
-          iconAnchor: [11, 11],
-        });
-        const marker = L.marker(inc.coords, { icon });
-        marker.bindPopup(
-          `<div class="text-xs space-y-1">
-            <div class="font-bold text-red-400">${inc.id}: ${t.incidentTypes[inc.type]}</div>
-            <div>${t.liveMap.severityLabel}: <b>${t.severity[inc.severity]}</b></div>
-            <div>${t.liveMap.locationLabel}: ${getNodeName(inc.nearestNodeId, lang)}</div>
-            <div>${t.liveMap.statusLabel}: ${t.incidentStatus[inc.status]} ${inc.assignedTeamId ? `(${inc.assignedTeamId})` : ''}</div>
-          </div>`
-        );
-        marker.addTo(layers.incidents);
+  incidents
+    .filter((i) => i.status !== 'Resolved' && i.status !== 'Cancelled')
+    .forEach((inc) => {
+      const icon = L.divIcon({
+        className: 'custom-incident-icon',
+        html: `<div style="background:#ef4444;border:2px solid #fff;color:#fff;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:9999px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px #ef4444;">!</div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
       });
-  }, [incidents, overlays.incidents, lang, t]);
+      const marker = L.marker(inc.coords, { icon });
+      marker.bindPopup(
+        `<div class="text-xs space-y-1">
+          <div class="font-bold text-red-400">${inc.id}: ${t.incidentTypes[inc.type]}</div>
+          <div>${t.liveMap.severityLabel}: <b>${t.severity[inc.severity]}</b></div>
+          <div>${t.liveMap.locationLabel}: ${getNodeName(inc.nearestNodeId, lang)}</div>
+          <div>${t.liveMap.statusLabel}: ${t.incidentStatus[inc.status]} ${inc.assignedTeamId ? `(${inc.assignedTeamId})` : ''}</div>
+        </div>`
+      );
+      marker.addTo(layers.incidents);
+    });
+}, [incidents, overlays.incidents, lang, t]);
 
+// Render Municipal Teams
+useEffect(() => {
+  const layers = layersRef.current;
+  if (!layers) return;
+  layers.teams.clearLayers();
+  if (!overlays.teams) return;
+
+  teams.forEach((team) => {
+    const icon = L.divIcon({
+      className: 'custom-team-icon',
+      html: `<div style="background:${
+        team.available ? '#10b981' : '#f59e0b'
+      };border:2px solid #0f172a;color:#020617;font-weight:800;font-size:9px;padding:1px 4px;border-radius:4px;white-space:nowrap;">${team.id}</div>`,
+      iconSize: [44, 18],
+      iconAnchor: [22, 9],
+    });
+    const marker = L.marker(team.coords, { icon });
+    marker.bindPopup(
+      `<div class="text-xs space-y-1">
+        <div class="font-bold text-emerald-400">${team.id} — ${t.teamCategories[team.category]}</div>
+        <div>${getTeamName(team, lang)}</div>
+        <div>${t.liveMap.statusLabel}: <b>${team.available ? t.liveMap.available : `${t.liveMap.enRoute} (${team.assignedIncidentId})`}</b></div>
+      </div>`
+    );
+    marker.addTo(layers.teams);
+  });
+}, [teams, overlays.teams, lang, t]);
   // Render Municipal Teams
   useEffect(() => {
     const layers = layersRef.current;
