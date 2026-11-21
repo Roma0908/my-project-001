@@ -26,6 +26,7 @@ import {
   Users,
   XCircle,
 } from 'lucide-react';
+import { translations, Language } from './translations';
 import {
   ASTANA_CENTER,
   ASTANA_LANDMARKS,
